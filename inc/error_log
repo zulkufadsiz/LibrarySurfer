@@ -1,0 +1,1 @@
+[13-Aug-2017 10:21:37 UTC] PHP Warning:  mysqli_connect(): (HY000/1045): Access denied for user ''@'localhost' (using password: NO) in /home/kocaelifikir/public_html/secure/inc/mysql.class1.php on line 3

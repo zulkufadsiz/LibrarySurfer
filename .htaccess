@@ -1,0 +1,9 @@
+RewriteEngine on
+DirectoryIndex index.php
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d 
+
+# Adds SVG image support
+AddType image/svg+xml svg svgz
+AddEncoding gzip svgz
