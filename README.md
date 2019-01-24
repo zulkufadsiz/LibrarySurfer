@@ -32,7 +32,7 @@ Have enjoy.
  [![N|Solid](http://zulkufadsiz.com.tr/github/books.png)](https://nodesource.com/products/nsolid)
 
 
-[![N|Solid](http://zulkufadsiz.com.tr/assets/img/logo.png)](https://nodesource.com/products/nsolid)  [Twitter](http://twitter.com.zulkufadsiz) - [Zülküf ADSIZ](http://zulkufadsiz.com.tr)
+[![N|Solid](http://zulkufadsiz.com.tr/assets/img/logo.png)](https://nodesource.com/products/nsolid)  [Twitter](http://twitter.com/zulkufadsiz) - [Zülküf ADSIZ](http://zulkufadsiz.com.tr)
 
 
 
