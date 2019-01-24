@@ -1,5 +1,5 @@
 <?php if ($_GET[action] == "delete") {
-        $sil_sorgu     = "DELETE FROM books WHERE isbn = $_GET[isbn]";
+        $sil_sorgu     = "DELETE FROM sp_books WHERE isbn = $_GET[isbn]";
         $sil_exec      = mysqli_query($connect, $sil_sorgu);
         header("Location: ?page=books&ok=delete");
         }           
@@ -113,9 +113,13 @@
             values('$isbn' ,'$status', '$ordering', '$category_id', '$author', '$title', '$description' $resim_2)";
             // echo $query_string1;
             $query_string1_calistir = mysqli_query($connect, $query_string1);
+
+            $query_string2 = "SELECT isbn FROM sp_books ORDER BY create_date DESC LIMIT 1 ";
+            $query_string2_calistir = mysqli_query($connect, $query_string2);
+            $result = mysqli_fetch_object($query_string2_calistir);
             $sonid = mysqli_insert_id($connect);
             // echo $kategori_sorgu;   
-            header("Location: ?page=books&action=edit&isbn=$sonid&ok=add");
+            header("Location: ?page=books&action=edit&isbn=$result->isbn&ok=add");
             echo mysqli_error();
             die();
         }
@@ -163,7 +167,7 @@
                         </div>
                         <div class="form-group col-sm-4 col-xs-12">
                             <label for="example-text-input" class=" col-form-label">ISBN<span class="text-danger">*</span></label>
-                            <input class="form-control" type="text" id="example-text-input" name="isbn" value="<?php echo $_POST[isbn];?>" required>
+                            <input class="form-control" maxlength="13" type="text" id="isbn" name="isbn" value="<?php echo $_POST[isbn];?>" required>
                         </div>
                         <div class="form-group col-sm-6 col-xs-12">
                             <label for="example-text-input" class=" col-form-label">Kitap Adı<span class="text-danger">*</span></label>
@@ -222,15 +226,15 @@
                 $new_name = resimYukle($_FILES[resim][name],$fiup);
                 $resim = ", image = '$new_name'";
             }
-           
-            $sorgu      = "update books set 
+
+            $sorgu      = "update sp_books set 
             status = '$status', 
             ordering = '$ordering', 
             category_id = '$category_id',
             isbn = '$isbn', 
             author_id = '$author',
             title = '$title',
-            description = '$description', 
+            description = '$description' 
             $resim where isbn = '$_GET[isbn]'";
             // echo $sorgu;
             $sorgu_calistir = mysqli_query($connect, $sorgu);    
@@ -296,7 +300,7 @@
                         </div>
                         <div class="form-group col-sm-4 col-xs-12">
                             <label for="example-text-input" class=" col-form-label">ISBN<span class="text-danger">*</span></label>
-                            <input class="form-control" type="text" id="example-text-input" name="isbn" value="<?php echo $query2->isbn?>" required>
+                            <input class="form-control" maxlength="13"> type="text" id="example-text-input" name="isbn" value="<?php echo $query2->isbn?>" required>
                         </div>
                         <div class="form-group col-sm-6 col-xs-12">
                             <label for="example-text-input" class=" col-form-label">Kitap Adı<span class="text-danger">*</span></label>
@@ -369,7 +373,7 @@
                         $title = $array['title'];
                         $photo_name = $array['picture_path'];
                         ?>
-                            <li id='item-<?php echo $id ?>' class="text-center"><img src=<?php echo $pic_url2;?>/<?php echo $photo_name ?> alt=""><br><?php echo $title ?>
+                            <li id='item-<?php echo $id ?>' class="text-center"><img src=<?php echo $pic_url;?>/<?php echo $photo_name ?> alt=""><br><?php echo $title ?>
                             <a class="btn btn-danger" href="?page=books&action=edit&isbn=<?php echo $_GET[isbn]?>&pp_action=resim_sil&picture_id=<?php echo $array['picture_id']?>" style="width:100%">Sil</a></li>
 
                         <?php
@@ -392,7 +396,7 @@
                         
                         move_uploaded_file($img_source,$fiup.'/'.$img_name);
                         
-                        $query = mysqli_query($connect, "INSERT INTO sp_book_pictures (picture_path, isbn) VALUES ('$img_name', '$_GET[isbn]')");
+                        $query = mysqli_query($connect, "INSERT INTO sp_book_pictures (picture_path, isbn, picture_status) VALUES ('$img_name', '$_GET[isbn]', '1')");
                         header("Location: ?page=books&action=edit&isbn=$_GET[isbn]&ok=edit");
                     }else{//Resim seçilmemiþ ve hata var ise
                         header("Location: ?page=books&action=edit&isbn=$_GET[isbn]&ok=error");
@@ -422,3 +426,6 @@
             </div>
         </div>
     <?php } ?>
+
+    
+     

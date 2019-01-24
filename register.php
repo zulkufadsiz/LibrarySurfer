@@ -42,7 +42,7 @@ require_once 'inc/mysql.class.php';
                     <?php
                         if ($_POST) {
                            
-                       echo $fullname   = mysqli_real_escape_string($connect, $_POST['fullname']);
+                        $fullname   = mysqli_real_escape_string($connect, $_POST['fullname']);
                         $email      = mysqli_real_escape_string($connect, $_POST['email']);
                         $email      = trim($email);
                         $password   = mysqli_real_escape_string($connect, $_POST['password']);
@@ -50,6 +50,7 @@ require_once 'inc/mysql.class.php';
 
                         $sql = "INSERT INTO sp_users(full_name,email,password,status) VALUES('$fullname','$email','$password','1')";
                         $query_run  = mysqli_query($connect, $sql);
+                        header("Location: login.php");
                         }
 					?>				
                         <form role="form" action="" method="post" id="validate">
@@ -97,20 +98,35 @@ require_once 'inc/mysql.class.php';
     <script src="vendor/jquery-validation/dist/jquery.validate.min.js"></script>
     <script type="text/javascript">
         //$('#validate').validate();
-        $( "#validate" ).validate({
-          rules: {
-            password: "required",
-            confirm: {
-              equalTo: "#password"
+        var degisken = $( "#validate" ).validate({
+            rules: {
+                password: "required",
+                confirm: {
+                  equalTo: "#password"
+                },
+                email: {
+                    required: true,
+                    email: true,
+                    remote: {
+                        url: "checkComponent.php",
+                        type: "post",
+                        data: {
+                            email: function() {
+                                return $("#email").val();
+                            }
+                        }
+                    }
+                },
             },
-             email: {
-              required: true,
-              email: true
+            messages: {
+                email: {
+                    remote:"Bu mail adresi daha önceden kayıt edilmiş"
+                }
             }
-          }
         });
+
+
     </script>
-     
 </body>
 
 </html>

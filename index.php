@@ -5,7 +5,6 @@ include 'inc/session.php';
 include 'inc/config.php';
 include 'inc/mysql.class.php'; 
 include 'inc/functions.php';
-// include 'inc/panel.class.php'; 
 include 'inc/class.upload.php';
 include 'inc/resimYukle.php';
 include 'inc/dosyaYukle.php';
@@ -83,12 +82,12 @@ ini_set('display_errors', 0);
 			<div class="nav-profile dropdown">
 				<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                 <?php 
-                    $sorgu              = "select * from users where id = $user_id";
+                    $sorgu              = "select * from sp_users where id = $user_id";
                     $sorgu_calistir     = mysqli_query($connect, $sorgu);
                     $user_information              = mysqli_fetch_object($sorgu_calistir);
                 ?>      
-					<div class="user-image"><img src="<?php echo $pic_url?>/<?php echo $user_information->picture?>" class="avatar img-circle" alt="user" title="user"></div>
-					<div class="user-info expanding-hidden"><?php echo $user_information->name ?> <small class="bold"><?php if ($user_information->level == 1 ) { echo "Yönetici";} else{ echo "Yönetici";}?></small></div>
+					<div class="user-image"><img src="<?php echo $pic_url?>/user.png" class="avatar img-circle" alt="user" title="user"></div>
+					<div class="user-info expanding-hidden"><?php echo $user_information->full_name;?> <small class="bold"><?php if ($user_information->level == 1 ) { echo "Yönetici";} else{ echo "Yönetici";}?></small></div>
 				</a>
 				<div class="dropdown-menu">
                     <a class="dropdown-item" href="index.php?page=profile&action=edit">Ayarlar</a> 
@@ -200,121 +199,34 @@ ini_set('display_errors', 0);
 <script src="scripts/sweetalert.min.js"></script>
 <script src="scripts/validator.js"></script> 
 <script src='scripts/tiny/tinymce.min.js'></script>
-<?php if ($_GET[page] == "survey" && $_GET[action] == "viewistatistic"){?>
-<script src="vendor/Chart.js/dist/Chart.bundle.js"></script>
-<script src="vendor/Chart.js/dist/utils.js"></script>
-<script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
-<script>
-<?php
-$perfect_count= 0; $good_count= 0; $intermediate_count= 0; $bad_count= 0; $verybad_count = 0;
-$sorgu6 = "select * from surveys";
-$sorgu6_calistir   = mysqli_query($connect, $sorgu6);
-while($all_answers = mysqli_fetch_object($sorgu6_calistir)){
-    $count= 1;
-
-    while ($count <= 12) {
-    $answer = "answer$count";
-        switch ($all_answers->$answer) {
-            case 'perfect':
-                $perfect_count++;
-                break;
-            case 'good':
-                $good_count++;
-                break;
-            case 'intermediate':
-                $intermediate_count++;
-                break;
-            case 'bad':
-                $bad_count++;
-                break;
-            case 'verybad':
-                $verybad_count++;
-                break;
-            default:
-
-                break;
-        }
-    $count++;    
-    }
-}
-?>    
-var total_count = <?php echo $perfect_count?> + <?php echo $good_count?> + <?php echo $intermediate_count?> + <?php echo $bad_count?> + <?php echo $verybad_count?>;
-var perfect_count = <?php echo $perfect_count?> , good_count = <?php echo $good_count?>, intermediate_count = <?php echo $intermediate_count?>, bad_count = <?php echo $bad_count?>, verybad_count = <?php echo $verybad_count?>;
-var perfect_raito = perfect_count / (total_count / 100);
-var good_raito = good_count / (total_count / 100);
-var intermediate_raito = intermediate_count / (total_count / 100);
-var bad_raito = bad_count / (total_count / 100);
-var verybad_raito = verybad_count / (total_count / 100);
-
-var config = {
-    type: 'pie',
-    data: {
-        datasets: [{
-            data: [perfect_raito, good_raito, intermediate_raito, bad_raito, verybad_raito],
-            backgroundColor: [
-                'rgb(127, 195, 92)',
-                'rgb(240, 197, 76)',
-                'rgb(76, 195, 240)',
-                'rgb(76, 127, 240)',
-                'rgb(210, 109, 84)'
-            ]
-        }],
-        labels: [
-            "Çok iyi(5)",
-            "İyi(4)",
-            "Orta(3)",
-            "Kötü(2)",
-            "Çok kötü(1)"
-        ]
-    },
-    options: {
-        responsive: true
-    }
-};
-var config2 = {
-    type: 'bar',
-    data: {
-        datasets: [{
-            data: [perfect_count, good_count, intermediate_count, bad_count, verybad_count],
-            backgroundColor: [
-                'rgb(127, 195, 92)',
-                'rgb(240, 197, 76)',
-                'rgb(76, 195, 240)',
-                'rgb(76, 127, 240)',
-                'rgb(210, 109, 84)'
-            ]
-        }],
-        labels: [
-            "Çok iyi(5)",
-            "İyi(4)",
-            "Orta(3)",
-            "Kötü(2)",
-            "Çok kötü(1)"
-        ]
-    },
-    options: {
-        responsive: true,
-        scales: {
-        yAxes: [{
-            ticks: {
-                beginAtZero: true
+<?php if ($_GET[page] == "books" && $_GET[action] == "add"){?>
+ <script src="vendor/jquery-validation/dist/jquery.validate.min.js"></script>
+ <script type="text/javascript">
+        //$('#validate').validate();
+        var degisken = $( "#checkForm" ).validate({
+            rules: {
+                isbn: {
+                    required: true,
+                    remote: {
+                        url: "checkComponent.php",
+                        type: "post",
+                        data: {
+                            isbn: function() {
+                                return $("#isbn").val();
+                            }
+                        }
+                    }
+                },
+            },
+            messages: {
+                isbn: {
+                    remote:"Bu isbn kodu daha önceden kayıt edilmiş"
+                }
             }
-        }]
-    }
-    }
-};
+        });
 
-window.onload = function() {
-    var ctx = document.getElementById("chart-area").getContext("2d");
-    window.myPie = new Chart(ctx, config);
 
-    var ctx2 = document.getElementById("chart-area2").getContext("2d");
-    window.myBar = new Chart(ctx2, config2);
-};
-</script>
+    </script>
 <?php } ?>
 <!-- End of statistics page scripts -->
 <script src="scripts/custom.js"></script>
@@ -365,41 +277,6 @@ window.onload = function() {
         });
     }
 });
-</script>
-<script type="text/javascript">
-    $("select[name=slider_type]").change(function(){
-        var type = $(this).val();
-
-        if (type == 1 ) {
-            $("#title_1_tr").remove();
-        }
-        else{
-            var page = '<?php echo $_GET[action]; ?>' ;
-            if (page == "add") {
-                $("#title_2_tr").before('<div class="form-group col-xs-6" id="title_1_tr"><label for="example-text-input" class=" col-form-label">Üst Başlık</label><input class="form-control" type="text" id="example-text-input" name="first_title_tr" value="<?php echo $_POST[first_title_tr];?>"></div>');
-            }
-            else{
-                $("#title_2_tr").before('<div class="form-group col-xs-6" id="title_1_tr"><label for="example-text-input" class=" col-form-label">Üst Başlık</label><input class="form-control" type="text" id="example-text-input" name="first_title_tr" value="<?php echo str_replace(chr(34), "&quot;", stripslashes($query2->first_title_tr)); ?>"></div>');
-            }
-        }
-    });
-</script>
-<script type="text/javascript">
-    $("select[name=location_type]").change(function(){
-    $("#surMansetPhoto").remove();
-
-    var type = $(this).val();
-    if (type == 2 ) {
-        // alert($(this).val());
-       <?php if ($_GET[action] == "add") {  ?>
-        $("#location_selector").after('<div class="form-group col-xs-12" id="surMansetPhoto"><label for="example-text-input" class=" col-form-label">Sürmanşet Fotoğrafı (Habere kapak fotoğrafı girmeyi unutmayın!..)<span class="text-danger">*</span></label><input class="form-control focused" type="file" name="resim2" required></div>');
-       <?php  }
-        else if ($_GET[action] == "edit") {  ?>
-        $("#location_selector").after('<div class="form-group col-xs-12" id="surMansetPhoto"><label for="example-color-input" class=" col-form-label">Sürmanşet Fotoğrafı (Habere kapak fotoğrafı girmeyi unutmayın!..)<span class="text-danger">*</span></label><input class="form-control focused" type="file" name="resim2"><p><img src="<?php echo $pic_url?>/<?php echo $query2->image_sur?>" width="200px" ></p></div>');
-      <?php  } ?>
-    }
-});
-
 </script>
 </body>
 
